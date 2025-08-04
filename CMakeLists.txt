@@ -31,12 +31,15 @@ add_executable(${PROJECT_NAME}
     src/floatingball.h
     src/trayicon.cpp
     src/trayicon.h
+    src/screenmonitor.cpp
+    src/screenmonitor.h
     resources.qrc
 )
 
 target_link_libraries(${PROJECT_NAME} 
     PRIVATE
     Qt5::Widgets
+    version
 )
 
 # 设置输出目录

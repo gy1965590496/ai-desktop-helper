@@ -3,6 +3,8 @@
 #include <QDebug>
 #include "floatingball.h"
 #include "trayicon.h"
+#include "screenmonitor.h"
+#include <QDir> // Added for QDir::currentPath()
 
 int main(int argc, char *argv[])
 {
@@ -20,15 +22,61 @@ int main(int argc, char *argv[])
     // 创建托盘图标管理器
     TrayIcon *trayIcon = new TrayIcon(ball);
     
+    // 创建屏幕监控模块
+    ScreenMonitor *screenMonitor = new ScreenMonitor();
+    
+    // 配置屏幕监控
+    ScreenshotConfig config;
+    config.captureInterval = 10000; // 10秒截图一次
+    config.autoSave = true;
+    config.savePath = "./screenshots/";
+    config.imageQuality = 85;
+    config.maxCacheSize = 50;
+    screenMonitor->setConfig(config);
+    
+    // 连接屏幕监控信号
+    QObject::connect(screenMonitor, &ScreenMonitor::activeApplicationChanged, 
+        [ball, screenMonitor](const QString &oldApp, const QString &newApp) {
+            qDebug() << "应用切换:" << oldApp << "->" << newApp;
+        });
+    
+    QObject::connect(screenMonitor, &ScreenMonitor::appInfoUpdated, 
+        [ball](const QString &appName, const AppInfo &appInfo) {
+            qDebug() << "应用信息更新完成:" << appName;
+            // 设置悬浮球左上角图标
+            ball->setAppIcon(appInfo.appIcon);
+        });
+    
+    QObject::connect(screenMonitor, &ScreenMonitor::screenshotCaptured, 
+        [](const QString &appName, const QPixmap &screenshot) {
+            qDebug() << "截图完成:" << appName << "尺寸:" << screenshot.size();
+        });
+    
+    QObject::connect(screenMonitor, &ScreenMonitor::errorOccurred, 
+        [](const QString &error) {
+            qDebug() << "屏幕监控错误:" << error;
+        });
+    
     // 连接信号槽
     QObject::connect(trayIcon, &TrayIcon::exitRequested, [&app]() {
         app.quit();
     });
     
     // 连接悬浮球菜单项点击信号（预留扩展点）
-    QObject::connect(ball, &FloatingBall::menuItemClicked, [](const QString &itemText) {
-        // 预留：这里可以添加全局的菜单项处理逻辑
-        qDebug() << "菜单项被点击:" << itemText;
+    QObject::connect(ball, &FloatingBall::menuItemClicked, [screenMonitor](const QString &itemText) {
+        // 处理菜单项点击
+        if (itemText == "屏幕监控") {
+            // 启动/停止屏幕监控
+            if (screenMonitor->isMonitoring()) {
+                screenMonitor->stopMonitoring();
+                qDebug() << "屏幕监控已停止";
+            } else {
+                screenMonitor->startMonitoring();
+                qDebug() << "屏幕监控已启动";
+            }
+        } else {
+            qDebug() << "菜单项被点击:" << itemText;
+        }
     });
     
     // 连接悬浮球拖拽状态变化信号（预留扩展点）
@@ -53,6 +101,9 @@ int main(int argc, char *argv[])
     
     // 显示托盘图标
     trayIcon->show();
+    
+    // 启动屏幕监控（可选，默认不启动）
+    // screenMonitor->startMonitoring();
     
     // 运行应用程序
     return app.exec();

@@ -143,6 +143,18 @@ bool FloatingBall::isBallVisible() const
     return isVisible();
 }
 
+void FloatingBall::setAppIcon(const QIcon &icon)
+{
+    qDebug() << "设置应用图标:" << (icon.isNull() ? "空图标" : "有效图标");
+    m_appIcon = icon;
+    update();
+}
+
+QIcon FloatingBall::getAppIcon() const
+{
+    return m_appIcon;
+}
+
 // 绘制事件
 void FloatingBall::paintEvent(QPaintEvent *event)
 {
@@ -180,6 +192,20 @@ void FloatingBall::paintEvent(QPaintEvent *event)
             painter.setFont(m_appearance.font);
             painter.drawText(rect(), Qt::AlignCenter, m_appearance.text);
         }
+    }
+    // 左上角绘制应用图标
+    if (!m_appIcon.isNull()) {
+        int iconSize = 24;
+        QRect iconRect(2, 2, iconSize, iconSize);
+        qDebug() << "绘制应用图标，位置:" << iconRect;
+        qDebug() << "图标可用尺寸:" << m_appIcon.availableSizes();
+        qDebug() << "图标是否为空:" << m_appIcon.isNull();
+        
+        // 直接绘制图标，不添加背景
+        m_appIcon.paint(&painter, iconRect);
+        qDebug() << "图标绘制完成";
+    } else {
+        qDebug() << "应用图标为空，跳过绘制";
     }
 }
 
@@ -272,8 +298,8 @@ void FloatingBall::onMenuItemTriggered(QAction *action)
         // 其他菜单项处理
         else if (itemText == "鼠标随航") {
             QMessageBox::information(this, "鼠标随航", "鼠标随航功能已启用");
-        } else if (itemText == "录制回想") {
-            QMessageBox::information(this, "录制回想", "录制回想功能开发中...");
+        } else if (itemText == "屏幕监控") {
+           
         } else if (itemText == "设置") {
             QMessageBox::information(this, "设置", "设置功能开发中...");
         }
@@ -401,7 +427,7 @@ void FloatingBall::createMenuItems()
             {"界面外观", "", false, false, "选择界面主题", appearanceSubItems},
             {"", "", false, false, ""}, // 分隔符
             {"鼠标随航", "", true, false, "鼠标随航功能"},
-            {"录制回想", "", true, false, "录制回想功能"},
+            {"屏幕监控", "", true, false, "屏幕监控功能"},
             {"", "", false, false, ""}, // 分隔符
             {"设置", "", false, false, "应用设置"}
         };

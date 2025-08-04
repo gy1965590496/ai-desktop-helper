@@ -7,6 +7,7 @@
 #include <QColor>
 #include <QFont>
 #include <QMovie>
+#include <QIcon> // Added for QIcon
 
 // 前向声明
 class QMenu;
@@ -73,6 +74,9 @@ public:
     void hideBall();
     bool isBallVisible() const;
 
+    void setAppIcon(const QIcon &icon);
+    QIcon getAppIcon() const;
+
 protected:
     // 事件处理
     void paintEvent(QPaintEvent *event) override;
@@ -127,6 +131,8 @@ private:
     QList<MenuItemConfig> m_menuItems;        // 菜单项配置列表
     QMenu *m_contextMenu;                     // 右键菜单对象
     bool m_menuVisible;                       // 菜单是否正在显示
+
+    QIcon m_appIcon; // 当前激活应用的图标
 };
 
 #endif // FLOATINGBALL_H 
