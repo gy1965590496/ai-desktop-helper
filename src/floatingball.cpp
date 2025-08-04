@@ -197,15 +197,9 @@ void FloatingBall::paintEvent(QPaintEvent *event)
     if (!m_appIcon.isNull()) {
         int iconSize = 24;
         QRect iconRect(2, 2, iconSize, iconSize);
-        qDebug() << "绘制应用图标，位置:" << iconRect;
-        qDebug() << "图标可用尺寸:" << m_appIcon.availableSizes();
-        qDebug() << "图标是否为空:" << m_appIcon.isNull();
         
         // 直接绘制图标，不添加背景
         m_appIcon.paint(&painter, iconRect);
-        qDebug() << "图标绘制完成";
-    } else {
-        qDebug() << "应用图标为空，跳过绘制";
     }
 }
 

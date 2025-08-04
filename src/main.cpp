@@ -4,6 +4,7 @@
 #include "floatingball.h"
 #include "trayicon.h"
 #include "screenmonitor.h"
+#include "networkmanager.h"
 #include <QDir> // Added for QDir::currentPath()
 
 int main(int argc, char *argv[])
@@ -24,6 +25,18 @@ int main(int argc, char *argv[])
     
     // 创建屏幕监控模块
     ScreenMonitor *screenMonitor = new ScreenMonitor();
+    
+    // 创建网络管理器
+    NetworkManager *networkManager = new NetworkManager();
+    
+    // 配置网络管理器
+    NetworkConfig networkConfig;
+    networkConfig.baseUrl = "https://api.example.com";
+    networkConfig.timeout = 30000;
+    networkConfig.maxRetries = 3;
+    networkConfig.retryDelay = 1000;
+    networkConfig.headers["User-Agent"] = "AI-Desktop-Helper/1.0";
+    networkManager->setConfig(networkConfig);
     
     // 配置屏幕监控
     ScreenshotConfig config;
@@ -55,6 +68,17 @@ int main(int argc, char *argv[])
     QObject::connect(screenMonitor, &ScreenMonitor::errorOccurred, 
         [](const QString &error) {
             qDebug() << "屏幕监控错误:" << error;
+        });
+    
+    // 连接网络管理器信号
+    QObject::connect(networkManager, &NetworkManager::requestFinished, 
+        [](const NetworkResponse &response) {
+            qDebug() << "网络请求完成，状态码:" << response.statusCode;
+        });
+    
+    QObject::connect(networkManager, &NetworkManager::requestError, 
+        [](const QString &error) {
+            qDebug() << "网络请求错误:" << error;
         });
     
     // 连接信号槽

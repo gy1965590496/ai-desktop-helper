@@ -20,12 +20,14 @@ endif()
 # 确保使用vcpkg安装的包
 set(CMAKE_PREFIX_PATH "C:/work/vcpkg/vcpkg/vcpkg_installed/x64-windows")
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+# 查找Qt5组件
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets Network)
 
 # 输出一些调试信息
 message(STATUS "Qt5Widgets_INCLUDE_DIRS: ${Qt5Widgets_INCLUDE_DIRS}")
 
-add_executable(${PROJECT_NAME}
+# 添加可执行文件
+add_executable(ai-desktop-helper
     src/main.cpp
     src/floatingball.cpp
     src/floatingball.h
@@ -33,12 +35,15 @@ add_executable(${PROJECT_NAME}
     src/trayicon.h
     src/screenmonitor.cpp
     src/screenmonitor.h
-    resources.qrc
+    src/networkmanager.cpp
+    src/networkmanager.h
 )
 
-target_link_libraries(${PROJECT_NAME} 
-    PRIVATE
+# 链接库
+target_link_libraries(ai-desktop-helper
+    Qt5::Core
     Qt5::Widgets
+    Qt5::Network
     version
 )
 
