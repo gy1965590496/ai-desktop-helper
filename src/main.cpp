@@ -33,6 +33,9 @@ int main(int argc, char* argv[])
 
 	// 创建设置界面
 	SettingsDialog* settingsDialog = new SettingsDialog();
+	
+	// 设置 ScreenMonitor 引用
+	settingsDialog->setScreenMonitor(screenMonitor);
 
 	// 配置网络管理器
 	NetworkConfig networkConfig;
@@ -112,6 +115,17 @@ int main(int argc, char* argv[])
 			}
 			
 			qDebug() << "已更新 ScreenMonitor 的应用过滤器";
+		});
+
+	// 连接记录管理信号
+	QObject::connect(screenMonitor, &ScreenMonitor::appRecordAdded,
+		[settingsDialog](const AppRecord& record) {
+			settingsDialog->addAppRecord(record);
+		});
+
+	QObject::connect(screenMonitor, &ScreenMonitor::appRecordsCleared,
+		[settingsDialog]() {
+			settingsDialog->clearAppRecords();
 		});
 
 	// 连接信号槽

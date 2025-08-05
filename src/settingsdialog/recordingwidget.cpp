@@ -95,11 +95,37 @@ void RecordingWidget::clearAppRecords()
 	updateAppRecordsDisplay();
 }
 
+void RecordingWidget::syncAppRecords(const QList<AppRecord>& records)
+{
+	m_appRecords.clear();
+	for (const AppRecord& record : records) {
+		m_appRecords.append(record);
+	}
+	updateAppRecordsDisplay();
+	qDebug() << "同步应用记录，数量:" << records.size();
+}
+
 void RecordingWidget::onTimeSliderChanged(int value)
 {
 	if (value >= 0 && value < m_appRecords.size()) {
 		m_appRecordsList->setCurrentRow(value);
-		m_timeLabel->setText(m_appRecords[value].timestamp.toString("hh:mm:ss"));
+		const AppRecord& record = m_appRecords[value];
+		m_timeLabel->setText(record.timestamp.toString("hh:mm:ss"));
+		
+		// 更新详情显示
+		if (!record.screenshot.isNull()) {
+			m_screenshotLabel->setPixmap(record.screenshot.scaled(350, 250, Qt::KeepAspectRatio));
+		} else {
+			m_screenshotLabel->setText("暂无截图");
+			m_screenshotLabel->setPixmap(QPixmap());
+		}
+
+		QString info = QString("应用: %1\n时间: %2\n路径: %3\n窗口标题: %4")
+			.arg(record.appName)
+			.arg(record.timestamp.toString("yyyy-MM-dd hh:mm:ss"))
+			.arg(record.appPath)
+			.arg(record.windowTitle);
+		m_appInfoLabel->setText(info);
 	}
 }
 
@@ -139,8 +165,20 @@ void RecordingWidget::updateAppRecordsDisplay()
 	m_timeSlider->setEnabled(true);
 	m_timeSlider->setRange(0, m_appRecords.size() - 1);
 
+	// 显示时间范围信息
+	QDateTime firstTime = m_appRecords.first().timestamp;
+	QDateTime lastTime = m_appRecords.last().timestamp;
+	QString timeRange = QString("%1 - %2")
+		.arg(firstTime.toString("hh:mm:ss"))
+		.arg(lastTime.toString("hh:mm:ss"));
+	m_timeLabel->setText(timeRange);
+
 	for (const AppRecord& record : m_appRecords) {
-		QString itemText = QString("%1 - %2").arg(record.timestamp.toString("hh:mm:ss")).arg(record.appName);
+		QString itemText = QString("%1 - %2")
+			.arg(record.timestamp.toString("hh:mm:ss"))
+			.arg(record.appName);
 		m_appRecordsList->addItem(itemText);
 	}
+	
+	qDebug() << "更新应用记录显示，记录数量:" << m_appRecords.size();
 }

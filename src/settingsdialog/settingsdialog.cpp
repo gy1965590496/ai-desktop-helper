@@ -1,6 +1,7 @@
 #include "settingsdialog.h"
 #include <QDebug>
 #include <QApplication>
+#include "../screenmonitor.h"
 
 SettingsDialog::SettingsDialog(QWidget* parent)
 	: QDialog(parent)
@@ -41,6 +42,32 @@ SettingsDialog::SettingsDialog(QWidget* parent)
 
 SettingsDialog::~SettingsDialog()
 {
+}
+
+void SettingsDialog::setScreenMonitor(ScreenMonitor* monitor)
+{
+	m_screenMonitor = monitor;
+	
+	// 同步现有的应用记录
+	if (m_screenMonitor) {
+		QList<AppRecord> records = m_screenMonitor->getAppRecords();
+		m_recordingWidget->syncAppRecords(records);
+		qDebug() << "已同步 ScreenMonitor 的现有记录，数量:" << records.size();
+	}
+}
+
+void SettingsDialog::addAppRecord(const AppRecord& record)
+{
+	// 将新记录添加到 RecordingWidget
+	m_recordingWidget->addAppRecord(record);
+	qDebug() << "新应用记录已添加:" << record.appName << "时间:" << record.timestamp.toString("hh:mm:ss");
+}
+
+void SettingsDialog::clearAppRecords()
+{
+	// 清空 RecordingWidget 的记录
+	m_recordingWidget->clearAppRecords();
+	qDebug() << "应用记录已清空";
 }
 
 void SettingsDialog::initializeUI()
@@ -169,6 +196,20 @@ void SettingsDialog::onAppFiltersChanged(const QStringList &filteredApps)
 {
 	qDebug() << "应用过滤列表已更新:" << filteredApps;
 	emit appFiltersChanged(filteredApps);
+}
+
+void SettingsDialog::onAppRecordAdded(const AppRecord &record)
+{
+	// 将新记录添加到 RecordingWidget
+	m_recordingWidget->addAppRecord(record);
+	qDebug() << "新应用记录已添加:" << record.appName << "时间:" << record.timestamp.toString("hh:mm:ss");
+}
+
+void SettingsDialog::onAppRecordsCleared()
+{
+	// 清空 RecordingWidget 的记录
+	m_recordingWidget->clearAppRecords();
+	qDebug() << "应用记录已清空";
 }
 
 

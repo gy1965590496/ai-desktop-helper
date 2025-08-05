@@ -17,6 +17,9 @@
 #include "appFilterWidget.h"
 #include "settingsnavigationbar.h"
 
+// 前向声明
+class ScreenMonitor;
+
 class SettingsDialog : public QDialog
 {
     Q_OBJECT
@@ -24,6 +27,13 @@ class SettingsDialog : public QDialog
 public:
     explicit SettingsDialog(QWidget *parent = nullptr);
     ~SettingsDialog();
+    
+    // 设置 ScreenMonitor 引用
+    void setScreenMonitor(ScreenMonitor* monitor);
+    
+    // 记录管理公共方法
+    void addAppRecord(const AppRecord& record);
+    void clearAppRecords();
 
 signals:
     // 不监控应用名单变化信号
@@ -44,6 +54,10 @@ private slots:
     
     // 应用过滤列表变化
     void onAppFiltersChanged(const QStringList &filteredApps);
+    
+    // 记录管理
+    void onAppRecordAdded(const AppRecord &record);
+    void onAppRecordsCleared();
 
 private:
     // 初始化UI
@@ -105,6 +119,9 @@ private:
     QLabel *m_titleLabel;
     QPushButton *m_closeBtn;
     QPushButton *m_minimizeBtn;
+    
+    // ScreenMonitor 引用
+    ScreenMonitor *m_screenMonitor;
 };
 
 #endif // SETTINGSDIALOG_H 

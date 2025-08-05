@@ -16,6 +16,7 @@ public:
 
 	void addAppRecord(const AppRecord& record);
 	void clearAppRecords();
+	void syncAppRecords(const QList<AppRecord>& records);
 
 signals:
 	void recordSelected(const AppRecord& record);

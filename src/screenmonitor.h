@@ -11,6 +11,7 @@
 #include <QApplication>
 #include <QDateTime>
 #include <QIcon> // Added for QIcon
+#include "common.h" // Added for AppRecord
 
 // Windows API 前向声明
 #ifdef _WIN32
@@ -62,6 +63,11 @@ public:
     void removeAppFilter(const QString &appName);
     QStringList getAppFilters() const;
 
+    // 记录管理
+    QList<AppRecord> getAppRecords() const;
+    void clearAppRecords();
+    void exportAppRecords(const QString &filePath);
+
     // 手动截图
     QPixmap captureCurrentWindow();
     QPixmap captureFullScreen();
@@ -84,6 +90,10 @@ signals:
     
     // 截图完成信号
     void screenshotCaptured(const QString &appName, const QPixmap &screenshot);
+    
+    // 记录管理信号
+    void appRecordAdded(const AppRecord &record);
+    void appRecordsCleared();
     
     // 错误信号
     void errorOccurred(const QString &error);
@@ -123,6 +133,8 @@ private:
     QMap<QString, AppInfo> m_appCache; // 应用缓存
     
     QMap<QString, bool> m_appFilters;  // 应用过滤器（true=排除）
+    
+    QList<AppRecord> m_appRecords;     // 应用记录列表
     
     bool m_isMonitoring;               // 是否正在监控
     int m_screenshotCounter;           // 截图计数器

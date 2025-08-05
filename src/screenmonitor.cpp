@@ -199,6 +199,22 @@ void ScreenMonitor::captureScreenshot()
     m_appCache[m_currentActiveApp].lastScreenshot = screenshot;
     m_appCache[m_currentActiveApp].lastCaptureTime = QDateTime::currentDateTime();
     
+    // 创建应用记录
+    AppRecord record;
+    record.appName = m_currentActiveApp;
+    record.timestamp = QDateTime::currentDateTime();
+    record.screenshot = screenshot;
+    record.appPath = m_appCache[m_currentActiveApp].executablePath;
+    record.windowTitle = m_appCache[m_currentActiveApp].windowTitle;
+    
+    // 添加到记录列表
+    m_appRecords.append(record);
+    
+    // 限制记录数量，保持最新的100条记录
+    if (m_appRecords.size() > 100) {
+        m_appRecords.removeFirst();
+    }
+    
     // 自动保存
     if (m_config.autoSave) {
         saveScreenshot(screenshot, m_currentActiveApp);
@@ -211,6 +227,9 @@ void ScreenMonitor::captureScreenshot()
     
     // 发送截图完成信号
     emit screenshotCaptured(m_currentActiveApp, screenshot);
+    
+    // 发送记录添加信号
+    emit appRecordAdded(record);
     
     m_screenshotCounter++;
     qDebug() << "Screenshot captured for" << m_currentActiveApp << "(" << m_screenshotCounter << ")";
@@ -624,4 +643,25 @@ void ScreenMonitor::updateAppInfo(const QString &appName)
     
     // 发送应用信息更新信号
     emit appInfoUpdated(appName, appInfo);
+} 
+
+// 记录管理方法
+QList<AppRecord> ScreenMonitor::getAppRecords() const
+{
+    return m_appRecords;
+}
+
+void ScreenMonitor::clearAppRecords()
+{
+    m_appRecords.clear();
+    emit appRecordsCleared();
+    qDebug() << "应用记录已清空";
+}
+
+void ScreenMonitor::exportAppRecords(const QString &filePath)
+{
+    // 这里可以实现导出记录到文件的功能
+    // 暂时只是调试输出
+    qDebug() << "导出应用记录到:" << filePath;
+    qDebug() << "记录数量:" << m_appRecords.size();
 } 

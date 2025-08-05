@@ -6,6 +6,9 @@ release/
 x64/
 x86/
 
+# screenshot
+screenshots/
+
 # CMake generated files
 CMakeCache.txt
 CMakeFiles/
