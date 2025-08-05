@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 # 设置vcpkg工具链文件
-set(CMAKE_TOOLCHAIN_FILE "C:/work/vcpkg/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+# set(CMAKE_TOOLCHAIN_FILE "C:/work/vcpkg/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 
 project(ai-desktop-helper)
 
@@ -21,10 +21,11 @@ endif()
 set(CMAKE_PREFIX_PATH "C:/work/vcpkg/vcpkg/vcpkg_installed/x64-windows")
 
 # 查找Qt5组件
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets Network)
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets Network Svg)
 
 # 输出一些调试信息
 message(STATUS "Qt5Widgets_INCLUDE_DIRS: ${Qt5Widgets_INCLUDE_DIRS}")
+message(STATUS "Qt5Svg_INCLUDE_DIRS: ${Qt5Svg_INCLUDE_DIRS}")
 
 # 添加可执行文件
 add_executable(ai-desktop-helper
@@ -37,6 +38,16 @@ add_executable(ai-desktop-helper
     src/screenmonitor.h
     src/networkmanager.cpp
     src/networkmanager.h
+    src/common.h
+    src/settingsdialog/settingsdialog.cpp
+    src/settingsdialog/settingsdialog.h
+    src/settingsdialog/appFilterWidget.cpp
+    src/settingsdialog/appFilterWidget.h
+    src/settingsdialog/recordingwidget.cpp
+    src/settingsdialog/recordingwidget.h
+    src/settingsdialog/settingsnavigationbar.cpp
+    src/settingsdialog/settingsnavigationbar.h
+    resources.qrc
 )
 
 # 链接库
@@ -44,6 +55,7 @@ target_link_libraries(ai-desktop-helper
     Qt5::Core
     Qt5::Widgets
     Qt5::Network
+    Qt5::Svg
     version
 )
 

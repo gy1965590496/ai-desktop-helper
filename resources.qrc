@@ -1,5 +1,14 @@
 <RCC>
     <qresource prefix="/images">
         <file>images/themes/meng.gif</file>
+        <file>images/icons/alarm.svg</file>
+        <file>images/icons/bookmark.svg</file>
+        <file>images/icons/data-download.svg</file>
+        <file>images/icons/data-upload.svg</file>
+        <file>images/icons/circle-arrow-down.svg</file>
+        <file>images/icons/app-store.svg</file>
+        <file>images/icons/c-add.svg</file>
+        <file>images/icons/archive.svg</file>
+        <file>images/icons/ban.svg</file>
     </qresource>
 </RCC> 
